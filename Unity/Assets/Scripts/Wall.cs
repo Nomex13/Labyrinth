@@ -3,38 +3,70 @@ using UnityEditor;
 using UnityEngine;
 using System.Collections;
 
+[ExecuteInEditMode]
 public class Wall : MonoBehaviour
 {
-	private bool field_isDissolving = false;
+	[Range(0, 1)]
+	public float BurnLevel = 0;
+	public Color BurnColor = Color.black;
+	public AnimationCurve BurnColorAnimationCurve;
+	[Range(0, 1)]
+	public float BurnBorderThickness = 0.2f;
+	public Color BurnBorderColor = Color.black;
+
+	private Animation field_animation;
+	private AnimationWithCallback field_animationWithCallback;
+
+	private AnimationCallbackContainer field_animationCallbackContainer = null;
+	private bool field_animationToPlayWasRequested = false;
+	private String field_animationToPlayName = "";
+	private Action field_animationToPlayCallback = null;
 
 	void Start ()
 	{
+		field_animation = GetComponent<Animation>();
+		field_animationWithCallback = GetComponent<AnimationWithCallback>();// GetComponent<AnimationCallback>();
 	}
 	
 	void Update ()
 	{
-		;
+		if (field_animationToPlayWasRequested)
+		{
+			field_animationToPlayWasRequested = false;
+			Debug.Log(field_animationToPlayName);
+			field_animationWithCallback.Play(field_animation, field_animationToPlayName, field_animationToPlayCallback);
+		}
+		renderer.material.SetFloat("_Threshold", 1 - BurnLevel);
+		renderer.material.SetFloat("_BorderThickness", BurnLevel > BurnBorderThickness ? BurnBorderThickness : BurnLevel);
+		renderer.material.SetColor("_Color", Color.Lerp(BurnColor, Color.white, BurnColorAnimationCurve.Evaluate(1 - BurnLevel)));
+		renderer.material.SetColor("_BorderColor", BurnBorderColor);
+	}
+
+	void OnDestroy()
+	{
 	}
 
 	public void Appear(Action param_callback)
 	{
-
-		FindObjectOfType<SimpleAnimator>().Animate(new AnimationPlateUpDown(gameObject));
-		//FindObjectOfType<SimpleAnimator>().Animate(new AnimationThresholdTransparency(gameObject, false), param_callback);
+		Debug.Log("APPEAR");
+		//zomg = true;
+		field_animationToPlayWasRequested = true;
+		field_animationToPlayName = "Wall Animation Appear";
+		field_animationToPlayCallback = null;
+		//field_animationCallbackContainer = new AnimationCallbackContainer(field_animation, "Wall Animation Appear");
 	}
 
 	public void Dissolve(Action param_callback)
 	{
-		Debug.Log(field_isDissolving);
-		if (field_isDissolving)
-			return;
-		field_isDissolving = true;
-
-		FindObjectOfType<SimpleAnimator>().Animate(new AnimationDissolve(gameObject), param_callback);
+		Debug.Log("DISSOLVE");
+		//zomg = true;
+		field_animationToPlayWasRequested = true;
+		field_animationToPlayName = "Wall Animation Dissolve";
+		field_animationToPlayCallback = delegate { Destroy(gameObject); };
+		//field_animationCallbackContainer = new AnimationCallbackContainer(field_animation, "Wall Animation Dissolve", delegate { Destroy(gameObject); });
 	}
 
-
-	class AnimationPlateUpDown : ISimpleAnimation
+	/*class AnimationPlateUpDown
 	{
 		private GameObject field_gameObject;
 		private Vector3 field_positionInitial;
@@ -57,6 +89,10 @@ public class Wall : MonoBehaviour
 
 		public bool Animate()
 		{
+			// If object destroyed - animation should end
+			if (field_gameObject == null)
+				return true;
+
 			float lerp = (Time.fixedTime - field_timeOfStart) / field_timeOfAnimation;
 
 			if (lerp < 0.5f)
@@ -81,7 +117,7 @@ public class Wall : MonoBehaviour
 		}
 	}
 
-	class AnimationDissolve : ISimpleAnimation
+	class AnimationDissolve
 	{
 		private GameObject field_gameObject;
 		private float field_thresholdInitial;
@@ -115,6 +151,10 @@ public class Wall : MonoBehaviour
 
 		public bool Animate()
 		{
+			// If object destroyed - animation should end
+			if (field_gameObject == null)
+				return true;
+
 			float lerp = (Time.fixedTime - field_timeOfStart) / field_timeOfAnimation;
 
 			if (lerp < 1f)
@@ -130,7 +170,7 @@ public class Wall : MonoBehaviour
 				field_gameObject.renderer.material.SetColor("_Color", colorNext);
 				field_colorPrevious = colorNext;
 				field_gameObject.renderer.material.SetFloat("_Threshold", thresholdNext);
-				field_gameObject.renderer.material.SetFloat("_BorderThickness", thresholdNext < 0.9f ? 0.1f : 1 - thresholdNext);
+				field_gameObject.renderer.material.SetFloat("_BorderThickness", thresholdNext < 0.8f ? 0.2f : 1 - thresholdNext);
 				field_thresholdPrevious = thresholdNext;
 				return false;
 			}
@@ -141,5 +181,5 @@ public class Wall : MonoBehaviour
 				return true;
 			}
 		}
-	}
+	}*/
 }

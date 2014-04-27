@@ -15,16 +15,18 @@ public class Field : MonoBehaviour
 	public float IntervalSizeX = 0.1f;
 	public float IntervalSizeY = 0.1f;
 
-	[Range(1,100)]
-	public int CellCountX = 10;
-	[Range(1, 100)]
-	public int CellCountY = 10;
+	private int field_cellCountX = 0;
+	private int field_cellCountY = 0;
 
+	private int field_mapIndex = -1;
+	private int field_mapIndexMinimum = 0;
+	private int field_mapIndexMaximum = 3;
+	private String field_mapName = null;
 	private GameObject[][] field_cells;
 
 	void Start ()
 	{
-		LoadMap("Levels/Level 1");
+		;
 	}
 	
 	void Update ()
@@ -32,24 +34,76 @@ public class Field : MonoBehaviour
 		;
 	}
 
-	void UnloadMap()
+	void MapUnload()
 	{
-		for (int x = 0; x < CellCountX; x++)
+		field_mapIndex = -1;
+		field_mapName = null;
+
+		for (int x = 0; x < field_cellCountX; x++)
 		{
-			for (int y = 0; y < CellCountY; y++)
+			for (int y = 0; y < field_cellCountY; y++)
 			{
 				Destroy(field_cells[x][y]);
 			}
 		}
 	}
 
-	void LoadMap(String param_mapName)
+	public bool MapReload()
 	{
+		int mapIndex = field_mapIndex;
+		String mapName = field_mapName;
+		MapUnload();
+		return mapIndex < 0 ? MapLoad(mapName) : MapLoad(mapIndex);
+	}
+
+	public bool MapLoadNext()
+	{
+		if (field_mapIndex < field_mapIndexMinimum || field_mapIndex >= field_mapIndexMaximum)
+			return false;
+
+		int mapIndex = field_mapIndex;
+		MapUnload();
+
+		return MapLoad(mapIndex + 1);
+	}
+	public bool MapLoadPrevious()
+	{
+		if (field_mapIndex <= field_mapIndexMinimum || field_mapIndex > field_mapIndexMaximum)
+			return false;
+
+		int mapIndex = field_mapIndex;
+		MapUnload();
+
+		return MapLoad(mapIndex - 1);
+	}
+	public bool MapLoad(int param_mapIndex)
+	{
+		if (param_mapIndex < field_mapIndexMinimum || param_mapIndex > field_mapIndexMaximum)
+			return false;
+
+		MapUnload();
+
+		if (MapLoad("Levels/Level " + param_mapIndex))
+		{
+			field_mapIndex = param_mapIndex;
+			return true;
+		}
+		else
+		{
+			field_mapIndex = -1;
+			field_mapName = null;
+			return false;
+		}
+	}
+	public bool MapLoad(String param_mapName)
+	{
+		MapUnload();
+
 		TextAsset mapTextAsset = Resources.Load(param_mapName) as TextAsset;
 		if (mapTextAsset == null)
 		{
 			Debug.Log("Couldn't load map \"" + param_mapName + "\"");
-			return;
+			return false;
 		}
 		String mapText = mapTextAsset.text;
 
@@ -62,7 +116,7 @@ public class Field : MonoBehaviour
 		if (mapLines.Length == 0)
 		{
 			Debug.Log("Map is empty");
-			return;
+			return false;
 		}
 
 		int length = mapLines[0].Length;
@@ -71,7 +125,7 @@ public class Field : MonoBehaviour
 			if (line.Length != length)
 			{
 				Debug.Log("Line \"" + line + "\" length is not " + length);
-				return;
+				return false;
 			}
 		}
 
@@ -85,15 +139,15 @@ public class Field : MonoBehaviour
 			}
 		}
 
-		CellCountX = length;
-		CellCountY = mapLines.Count();
+		field_cellCountX = length;
+		field_cellCountY = mapLines.Count();
 
-		Vector3 position = transform.position - new Vector3((CellCountX - 1) / 2f * (CellSizeX + IntervalSizeX), 0, (CellCountY - 1) / 2f * (CellSizeY + IntervalSizeX));
-		field_cells = new GameObject[CellCountX][];
-		for (int x = 0; x < CellCountX; x++)
+		Vector3 position = transform.position - new Vector3((field_cellCountX - 1) / 2f * (CellSizeX + IntervalSizeX), 0, (field_cellCountY - 1) / 2f * (CellSizeY + IntervalSizeX));
+		field_cells = new GameObject[field_cellCountX][];
+		for (int x = 0; x < field_cellCountX; x++)
 		{
-			field_cells[x] = new GameObject[CellCountY];
-			for (int y = 0; y < CellCountY; y++)
+			field_cells[x] = new GameObject[field_cellCountY];
+			for (int y = 0; y < field_cellCountY; y++)
 			{
 				field_cells[x][y] = Instantiate(PrefabCell, PrefabCell.transform.position + position + new Vector3(x * (CellSizeX + IntervalSizeX), 0, y * (CellSizeY + IntervalSizeY)), Quaternion.identity) as GameObject;
 				field_cells[x][y].name = "Cell " + x + " " + y;
@@ -101,9 +155,9 @@ public class Field : MonoBehaviour
 			}
 		}
 
-		for (int x = 0; x < CellCountX; x++)
+		for (int x = 0; x < field_cellCountX; x++)
 		{
-			for (int y = 0; y < CellCountY; y++)
+			for (int y = 0; y < field_cellCountY; y++)
 			{
 				switch (mapLines[x][y])
 				{
@@ -125,14 +179,16 @@ public class Field : MonoBehaviour
 				}
 			}
 		}
+		field_mapName = param_mapName;
+		return true;
 	}
 
-	void GenerateMap()
+	void MapGenerate()
 	{
 		String map = "";
-		for (int x = 0; x < CellCountX; x++)
+		for (int x = 0; x < field_cellCountX; x++)
 		{
-			for (int y = 0; y < CellCountY; y++)
+			for (int y = 0; y < field_cellCountY; y++)
 			{
 				if (Random.Range(0, 100) > 80)
 				{

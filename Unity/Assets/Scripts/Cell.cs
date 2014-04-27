@@ -53,16 +53,16 @@ public class Cell : MonoBehaviour
 
 	public CellObjects GetObjects()
 	{
-		CellObjects plateObjects = CellObjects.NONE;
+		CellObjects cellObjects = CellObjects.NONE;
 
 		if (field_floor != null)
-			plateObjects ^= CellObjects.FLOOR;
+			cellObjects ^= CellObjects.FLOOR;
 		if (field_wall != null)
-			plateObjects ^= CellObjects.WALL;
+			cellObjects ^= CellObjects.WALL;
 		if (field_enemy != null)
-			plateObjects ^= CellObjects.ENEMY;
+			cellObjects ^= CellObjects.ENEMY;
 
-		return plateObjects;
+		return cellObjects;
 	}
 	public void AddObjects(CellObjects param_objects)
 	{
@@ -75,7 +75,7 @@ public class Cell : MonoBehaviour
 		{
 			field_wall = Instantiate(PrefabWall, PrefabWall.transform.position + transform.position, Quaternion.identity) as GameObject;
 			field_wall.transform.parent = transform;
-			field_wall.GetComponent<Wall>().Appear(delegate { Destroy(field_floor); });
+			field_wall.GetComponent<Wall>().Appear(delegate { });
 		}
 		if ((param_objects & CellObjects.ENEMY) == CellObjects.ENEMY && field_enemy == null && field_wall == null)
 		{
@@ -88,14 +88,17 @@ public class Cell : MonoBehaviour
 		if ((param_objects & CellObjects.FLOOR) == CellObjects.FLOOR && field_floor != null)
 		{
 			Destroy(field_floor);
+			field_floor = null;
 		}
 		if ((param_objects & CellObjects.WALL) == CellObjects.WALL && field_wall != null)
 		{
-			field_wall.GetComponent<Wall>().Dissolve(delegate { Destroy(field_wall); field_wall = null; });
+			field_wall.GetComponent<Wall>().Dissolve(delegate { Destroy(field_wall); });
+			field_wall = null;
 		}
 		if ((param_objects & CellObjects.ENEMY) == CellObjects.ENEMY && field_enemy != null)
 		{
 			Destroy(field_enemy);
+			field_enemy = null;
 		}
 	}
 
@@ -109,7 +112,7 @@ public class Cell : MonoBehaviour
 		ENEMY = 8
 	}
 
-	class AnimationPlateUpDown : ISimpleAnimation
+	class AnimationPlateUpDown
 	{
 		private GameObject field_gameObject;
 		private Vector3 field_positionInitial;

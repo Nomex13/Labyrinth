@@ -20,6 +20,9 @@
 			"RenderType"="Transparent"
 		}
 		LOD 300
+		//Cull Off
+		//ZWrite On
+		//ZTest Always
 	
 		CGPROGRAM
 		#pragma surface surf Lambert alpha
@@ -46,7 +49,7 @@
 			fixed lumence = dot(colorMain.rgb, float3(0.299, 0.587, 0.144));
 
 			float threshold = (colorThreshold.r + colorThreshold.g + colorThreshold.b) / 3;
-			if (threshold > _Threshold)
+			if (threshold >= _Threshold)
 			{
 				colorMain.a = 0;
 			}
