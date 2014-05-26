@@ -36,7 +36,7 @@ Placing one wall takes 1 turn.
 
 Enemies are slugs. Enemies can't see killing machines. Enemies can evaporate walls. Each 3 turns enemy decides what path it will follow. Decision takes 1 turn. Enemy prefers path that has less number of walls to evaporate and is shorter.
 After path is selected, the enemy follows it blindly for the next 3 steps. If enemy meets a cell in its path that was changed, it will re-decide what path to take.
-Enemies can awake not on the 1st turn, but on 2nd or 3rd or etc.
+Enemies can awake not only on the 1st turn, but on 2nd or 3rd or etc.
 
 Evaporation takes 1 turn.
 Decision making takes 1 turn.
