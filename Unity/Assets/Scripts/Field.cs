@@ -83,7 +83,7 @@ public class Field : MonoBehaviour
 
 		MapUnload();
 
-		if (MapLoad("Levels/Level " + param_mapIndex))
+		if (MapLoad("Level " + param_mapIndex))
 		{
 			field_mapIndex = param_mapIndex;
 			return true;
@@ -99,13 +99,17 @@ public class Field : MonoBehaviour
 	{
 		MapUnload();
 
-		TextAsset mapTextAsset = Resources.Load(param_mapName) as TextAsset;
-		if (mapTextAsset == null)
+		var mapPath = System.IO.Path.Combine(Application.streamingAssetsPath, param_mapName + ".txt");
+		String mapText;
+		if (mapPath.Contains("://"))
 		{
-			Debug.Log("Couldn't load map \"" + param_mapName + "\"");
-			return false;
+			var www = new WWW(mapPath);
+			mapText = www.text;
 		}
-		String mapText = mapTextAsset.text;
+		else
+		{
+			mapText = System.IO.File.ReadAllText(mapPath);
+		}
 
 		Debug.Log("Map: \r\n" + mapText);
 

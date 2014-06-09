@@ -5,6 +5,15 @@
     * [Player](#player)
     * [Enemies](#enemies)
 
+<h2 id="scenarop">Scenario</h2>
+
+Племя негров.
+Танцуют вокруг жертвенника, на жертвеннике лежит связанный индеец - ГГ. На его лице ужас.
+После танца негры хватают ГГ и тащат к пещере.
+Внутри пещеры темная комната. Вначале комнаты стоит столб, к которому привязывают ГГ. Человеческое жертвоприношение это круто.
+Племя уходит и закрывает за собой дверь. На другом конце карты есть другая дверь.
+Включается свет, перед игроком чистая белая светлая комната-лабиринт.
+
 <h2 id="gameplay">Gameplay</h2>
 
 It's turn-based base defence.
@@ -29,52 +38,41 @@ Field consists of N x M cells. In each cell can be presented:
 <h3 id="player">Player</h3>
 
 Player can place walls. Player has 0-N walls at the beginning. After player's enemy has evaporated a wall that wall will appear in player's inventory in 2 turns.
-
 Placing one wall takes 1 turn.
+Untieing the hero takes 1 turn.
+
+<h4 id="hero">Hero</h4>
+
+Hero is an Indian man.
+He is tied to a stake at the very beginning.
+Anytime he sees an enemy, he screams like a bitch.
+
+<h4 id="stressbar">Stressbar</h4>
+
+Hero has a stress bar which has values [0, 1, 2, 3, 4, 5].
+If at the beginning and at the end of player's turn the hero doesn't see any enemy then stressbar is decreased by 1.
+If at the beginning and at the end of player's turn the hero sees same enemy then stressbar is increased by 1 for each such enemy.
+Otherwise, it is stress bar doesn't change.
+
+At the beginning stressbar is maximum - 5.
 
 <h3 id="enemies">Enemies</h3>
 
-Enemies are slugs. Enemies can't see killing machines. Enemies can evaporate walls. Each 3 turns enemy decides what path it will follow. Decision takes 1 turn. Enemy prefers path that has less number of walls to evaporate and is shorter.
-After path is selected, the enemy follows it blindly for the next 3 steps. If enemy meets a cell in its path that was changed, it will re-decide what path to take.
+Enemies are slugs with an eye on the top. Totaly alien creatures, maybe created in hidden genetic laboratories.
+Enemies can see walls and the player. Enemies can't see killing machines.
+Enemies can evaporate walls.
+At start enemy decides what path it will follow. That decision takes 1 turn. Prefered path:
+1. has less number of walls to evaporate,
+2. is shorter.
+After path is selected, the enemy follows it blindly until an unexpected wall or player himself is met or destination cell is reached. If enemy meets a wall that it didn't expect, it will re-decide what path to take.
 Enemies can awake not only on the 1st turn, but on 2nd or 3rd or etc.
 
 Evaporation takes 1 turn.
 Decision making takes 1 turn.
 Moving one cell takes 1 turn.
 
-Сценарий
-Племя негров.
-Танцуют вокруг жертвенника, на жертвеннике лежит связанный индеец - ГГ. На его лице ужас.
-После танца негры хватают ГГ и тащат к пещере.
-Внутри пещеры темная комната. Вначале комнаты стоит столб, к которому привязывают ГГ. Человеческое жертвоприношение это круто.
-Племя уходит и закрывает за собой дверь. На другом конце карты есть другая дверь.
-Включается свет, перед игроком чистая белая светлая комната-лабиринт.
-
-Игрок играет за оператора лабиринта. Слизни - инопланетные существа, вырвавшиеся из лаборатории.
-Игроку надо довести ГГ до хз через множество комнат-лабиринтов.
-
-В качестве хода игрок может:
-Поставить 1 стену, стена появится в конце текущего хода игрока.
-Поставить 2 стены, стены появятся в конце следующего хода игрока.
-Поставить 3 стены, стены появятся в конце послеследующего хода игрока.
-Поставить N стен,  стены появятся в конце (N-1)го хода игрока.
-Отвязать ГГ.
-Ничего не сделать.
-
-Слизень
-Первым ходом слизень смотрит, где стоит ГГ и строит к нему свой путь.
-Далее он слепо идет по построенному пути.
-Если в какой-то момент встает на клетку ГГ - гамовер.
-Если в какой-то момент он упирается в стену, которой не было, или наоборот - стена перед ним исчезла, то он заново тратит 1 ход для постройки пути до ГГ.
-Если слизень дошел до конца пути, то он заново тратит 1 ход для постройки пути до ГГ.
 
 Стрессбар
-ГГ при виде слизня начинает орать и визжать.
-У ГГ имеется стрессбар. Значения стрессбара [0, 5].
-Если в начале и в конце хода слизня не видно, то в конце хода стрессбар уменьшается на 1.
-Если в начале и в конце хода слизня видно,    то в конце хода стрессбар увеличивается на 1.
-Иначе стрессбар не меняет значениея.
-Вначале стрессбар максимальный.
 При стрессе 1-4 ГГ бежит в сторону от слизня или того места, где в последний раз он его видел.
 При стрессе равным 0 ГГ движется к выходу. Если пути к выходу нет, то стоит на месте.
 При стрессе 1 ГГ бежит от слизня если его видит или движется к выходу если не видит. //стоит на месте если не видит.
