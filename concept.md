@@ -45,7 +45,7 @@ Untieing the hero takes 1 turn.
 
 Hero is an Indian man.
 He is tied to a stake at the very beginning.
-Anytime he sees an enemy, he screams like a bitch.
+Anytime he sees an enemy he screams like a bitch.
 
 <h4 id="stressbar">Stressbar</h4>
 
